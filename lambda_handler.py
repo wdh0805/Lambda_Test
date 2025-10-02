@@ -19,26 +19,26 @@ def lambda_handler(event, context):
         # 예: arn:aws:lambda:ap-northeast-2:123456789012:function:LambdaTest:prod
         alias = context.invoked_function_arn.split(":")[-1]
         if alias == "prod":
-            api_url = "http://shopback.3dons.net"
+            api_url = "https://shopback.3dons.net"
         else:
-            api_url = "https://52.78.168.191"  # 오타 수정됨
+            api_url = "http://52.78.168.191"
+        print(f"server : {alias}")
 
         http = (event.get("requestContext") or {}).get("http") or {}
         method = http.get("method", "GET")
         path = _norm_path(event)  # 예: "/users", "/jobs", "/token"
 
-        # 라우트 매핑
         routes = {
-            ("GET", "/users"): users.list_users,
-            ("POST", "/jobs"): jobs.create_job,
-            ("POST", "/db_create"): db.put_data,
-            ("POST", "/login"): (users.login,{"api_url":api_url})
+            ("GET", "/users"): (users.list_users, {}),
+            ("POST", "/jobs"): (jobs.create_job, {}),
+            ("POST", "/db_create"): (db.put_data, {}),
+            ("POST", "/login"): (users.login, {"api_url": api_url})
         }
 
-        handler = routes.get((method, path))
-        if handler:
-            # api_url을 함수에 전달하도록 변경
-            return handler(event)
+        handler_info = routes.get((method, path))
+        if handler_info:
+            func, kwargs = handler_info
+            return func(event, **kwargs)
         else:
             return response.error("Not Found", 404)
 
