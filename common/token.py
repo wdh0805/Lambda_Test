@@ -6,8 +6,6 @@ import os
 JWT_ALGORITHM = "HS256"
 ACCESS_TOKEN_LIFETIME = timedelta(hours=1)
 REFRESH_TOKEN_LIFETIME = timedelta(hours=1, minutes=30)
-ROTATE_REFRESH_TOKENS = False
-BLACKLIST_AFTER_ROTATION = True
 SECRET_KEY = os.getenv("TOKEN_KEY")
 
 def create_access_token(user_id: str)->str:

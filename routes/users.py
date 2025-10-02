@@ -2,7 +2,7 @@ import json
 from common import response
 import requests
 import boto3
-from common.token import get_user_from_token, is_valid_token
+from common.token import create_access_token, get_user_from_token, is_valid_token
 
 dynamodb = boto3.client("dynamodb")
 TABLE_NAME = "Lambda_with_DB"
@@ -13,6 +13,23 @@ def list_users(event):
         {"id": 2, "name": "fBob"}
     ]
     return response.ok(data)
+
+def refresh_token(event):
+    print("refresh token start")
+    body = json.loads(event.get("body") or "{}")
+    refresh_token = body.get("refresh")
+
+    if is_valid_token(token=refresh_token, expected_type="refresh"):
+        user = str(get_user_from_token(refresh_token))
+        access_token = create_access_token(user)
+        refresh_token = create_access_token(user)
+        data = {"access":access_token, "refresh":refresh_token}
+        print("refresh token end")
+        return response.ok(data=data)
+
+    else:
+        print("refresh token end")
+        return response.error()
 
 def login(event,api_url:str):
     print("login start")

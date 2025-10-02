@@ -33,10 +33,10 @@ jobs:
             --zip-file fileb://function.zip
 
       - name: Wait for Lambda update to finish
-        run: sleep 15   # 15초 정도 대기
+        run: sleep 15   # 15초 정도 대기 대기 안걸면 github 오류 발생함.
 
       - name: Publish version with description
         run: |
           aws lambda publish-version \
             --function-name "${FUNCTION_NAME}" \
-            --description "dynamodb 부분 확인 주석 추가"
+            --description "refresh token 업데이트"
