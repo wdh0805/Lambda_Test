@@ -39,4 +39,4 @@ jobs:
         run: |
           aws lambda publish-version \
             --function-name "${FUNCTION_NAME}" \
-            --description "refresh token 업데이트"
+            --description "refresh token 수정"

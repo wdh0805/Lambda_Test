@@ -21,8 +21,9 @@ def refresh_token(event):
 
     if is_valid_token(token=refresh_token, expected_type="refresh"):
         user = str(get_user_from_token(refresh_token))
-        access_token = create_access_token(user)
-        refresh_token = create_access_token(user)
+        access_token = create_access_token(user)    # access token 생성
+        refresh_token = create_access_token(user)   # refresh token 생성
+        register_user(refresh=refresh_token, user_id=user)   # 데이터 등록
         data = {"access":access_token, "refresh":refresh_token}
         print("refresh token end")
         return response.ok(data=data)
