@@ -20,7 +20,6 @@ def login(event,api_url:str):
     login_id = body.get("login_id")
     password = body.get("password")
 
-    api_url = "https://52.78.168.191"  # 오타 수정됨
     url = f"{api_url}/api/user/login/"
     payload = {"login_id":login_id,"password":password}
 

@@ -39,4 +39,4 @@ jobs:
         run: |
           aws lambda publish-version \
             --function-name "${FUNCTION_NAME}" \
-            --description "오류 수정2."
+            --description "url 오류 수정."
