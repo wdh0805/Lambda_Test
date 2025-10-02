@@ -13,6 +13,7 @@ def _norm_path(event):
 
 
 def lambda_handler(event, context):
+    print("lambda handler start")
     try:
         # 별칭 구분하여 API 요청하는 곳을 다르게 함
         # 예: arn:aws:lambda:ap-northeast-2:123456789012:function:LambdaTest:prod
@@ -37,7 +38,7 @@ def lambda_handler(event, context):
         handler = routes.get((method, path))
         if handler:
             # api_url을 함수에 전달하도록 변경
-            return handler(event, api_url=api_url)
+            return handler(event)
         else:
             return response.error("Not Found", 404)
 
