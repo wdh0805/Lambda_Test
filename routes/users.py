@@ -36,25 +36,25 @@ def login(event,api_url:str):
     access = data.get("access")
     refresh = data.get("refresh")
     user_id = get_user_from_token(access)
-    register_user(refresh=refresh, user_id=user_id)
+    register_user(refresh=refresh, user_id=str(user_id))
 
     cleanup_dynamodb_user()
     print("login end")
     return response.ok(data=data)
 
-def register_user(refresh, user_id)->bool:
+def register_user(refresh, user_id:str)->bool:
     print("register user start")
     # dynamodb 에 기존 데이터 존재하는지 확인
     resp = dynamodb.get_item(
         TableName=TABLE_NAME,
-        Key={"User": {"S": str(user_id)}}
+        Key={"User": {"S": user_id}}
     )
     item = resp.get("Item")
     if item:
         # 기존 데이터 삭제
         dynamodb.delete_item(
             TableName=TABLE_NAME,
-            Key={"User": {"S": str(user_id)}}
+            Key={"User": {"S": user_id}}
         )
 
     # 새로 저장
