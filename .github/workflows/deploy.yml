@@ -39,4 +39,4 @@ jobs:
         run: |
           aws lambda publish-version \
             --function-name "${FUNCTION_NAME}" \
-            --description "타입 수정."
+            --description "dynamodb 부분 확인 주석 추가"

@@ -56,6 +56,7 @@ def register_user(refresh, user_id:str)->bool:
             TableName=TABLE_NAME,
             Key={"User": {"S": user_id}}
         )
+        print(f"delete existing user : {user_id}")
 
     # 새로 저장
     item = {
