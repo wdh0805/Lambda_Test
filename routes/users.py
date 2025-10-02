@@ -54,39 +54,49 @@ def login(event,api_url:str):
     access = data.get("access")
     refresh = data.get("refresh")
     user_id = get_user_from_token(access)
+    cleanup_dynamodb_user()
     register_user(refresh=refresh, user_id=str(user_id))
 
-    cleanup_dynamodb_user()
     print("login end")
     return response.ok(data=data)
 
-def register_user(refresh, user_id:str)->bool:
+def register_user(refresh:str, user_id: str) -> bool:
     print("register user start")
-    # dynamodb 에 기존 데이터 존재하는지 확인
-    resp = dynamodb.get_item(
-        TableName=TABLE_NAME,
-        Key={"User": {"S": user_id}}
-    )
-    item = resp.get("Item")
-    if item:
-        # 기존 데이터 삭제
-        dynamodb.delete_item(
+    try:
+        # 기존 데이터 확인
+        resp = dynamodb.get_item(
             TableName=TABLE_NAME,
             Key={"User": {"S": user_id}}
         )
-        print(f"delete existing user : {user_id}")
+        item = resp.get("Item")
 
-    # 새로 저장
-    item = {
-        "User": {"S": user_id},
-        "refresh": {"S": refresh},  
-    }
-    dynamodb.put_item(    
-        TableName=TABLE_NAME,
-        Item=item                           
-    )
-    print("register user end")
-    return True
+        if item:
+            # 기존 데이터 있으면 refresh 토큰만 업데이트
+            dynamodb.update_item(
+                TableName=TABLE_NAME,
+                Key={"User": {"S": user_id}},
+                UpdateExpression="SET refresh = :r",
+                ExpressionAttributeValues={":r": {"S": refresh}},
+                ReturnValues="UPDATED_NEW"
+            )
+            print(f"update existing user : {user_id}")
+        else:
+            # 기존 데이터 없으면 새로 저장
+            dynamodb.put_item(
+                TableName=TABLE_NAME,
+                Item={
+                    "User": {"S": user_id},
+                    "refresh": {"S": refresh},
+                }
+            )
+            print(f"create new user : {user_id}")
+
+        print("register user end")
+        return True
+
+    except Exception as e:
+        print(f"register_user error: {e}")
+        return False
     
 
 def cleanup_dynamodb_user():
