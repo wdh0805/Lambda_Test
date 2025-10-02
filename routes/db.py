@@ -10,14 +10,16 @@ def put_data(event, context=None):
     body = json.loads(event.get("body") or "{}")
     user_id = body.get("user_id")
     available_yn = body.get("available_YN")
+    refresh_token = body.get("refresh_token")
 
-    if not user_id or not available_yn:
-        return response.error("user_id, available_YN 둘 다 필요합니다.", 400)
+    if not user_id or not available_yn or not refresh_token:
+        return response.error("user_id, available_YN, refresh token 모두 필요합니다.", 400)
 
     # 기본키 + 다양한 타입의 예시 속성 포함
     item = {
         "User": {"S": user_id},                # PK(테이블의 파티션 키 이름과 동일해야 함)
         "Available_YN": {"S": available_yn},   # (테이블에 정렬 키가 없다면 이 줄은 제거)
+        "refresh_token": {"S": refresh_token},   # (테이블에 정렬 키가 없다면 이 줄은 제거)
     }
 
     try:
@@ -27,7 +29,7 @@ def put_data(event, context=None):
         )
         return response.ok({
             "ok": True,
-            "key": {"User": user_id, "Available_YN": available_yn}
+            "key": {"User": user_id, "Available_YN": available_yn, "refresh_token":refresh_token}
         })
     except Exception as e:
         return response.error(str(e), 500)

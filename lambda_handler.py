@@ -1,5 +1,5 @@
 import json
-from routes import db, users, jobs, token_valid
+from routes import db, token, users, jobs
 from common import response
 
 def _norm_path(event):
@@ -11,27 +11,36 @@ def _norm_path(event):
         return trimmed if trimmed else "/"
     return raw
 
+
 def lambda_handler(event, context):
     try:
+        # 별칭 구분하여 API 요청하는 곳을 다르게 함
+        # 예: arn:aws:lambda:ap-northeast-2:123456789012:function:LambdaTest:prod
+        alias = context.invoked_function_arn.split(":")[-1]
+        if alias == "prod":
+            api_url = "http://shopback.3dons.net"
+        else:
+            api_url = "https://52.78.168.191"  # 오타 수정됨
+
         http = (event.get("requestContext") or {}).get("http") or {}
         method = http.get("method", "GET")
         path = _norm_path(event)  # 예: "/users", "/jobs", "/token"
 
-        if method == "GET" and path == "/users":
-            return users.list_users(event)
+        # 라우트 매핑
+        routes = {
+            ("GET", "/users"): users.list_users,
+            ("POST", "/jobs"): jobs.create_job,
+            ("POST", "/db_create"): db.put_data,
+            ("POST", "/login"): (users.login,{"api_url":api_url})
+        }
 
-        elif method == "POST" and path == "/jobs":
-            return jobs.create_job(event)
-
-        elif method == "POST" and path == "/token":
-            return token_valid.verify_jwt(event)
-        
-        elif method == "POST" and path == "/db_create":
-            return db.put_data(event)
-
+        handler = routes.get((method, path))
+        if handler:
+            # api_url을 함수에 전달하도록 변경
+            return handler(event, api_url=api_url)
         else:
             return response.error("Not Found", 404)
 
     except Exception as e:
-        # 에러 메시지를 노출하고 싶지 않으면 "Internal Error" 등으로 바꾸세요.
-        return response.error(str(e), 500)
+        # 운영환경에서는 내부 에러 메시지 노출하지 않음
+        return response.error("Internal Error", 500)
