@@ -33,7 +33,7 @@ def lambda_handler(event, context):
             ("POST", "/jobs"): (jobs.create_job, {}),
             ("POST", "/db_create"): (db.put_data, {}),
             ("POST", "/login"): (users.login, {"api_url": api_url}),
-            ("POST", "/refresh"): (users.refresh_token, {"api_url": api_url})
+            ("POST", "/refresh"): (users.refresh_token)
         }
 
         handler_info = routes.get((method, path))
