@@ -36,4 +36,4 @@ jobs:
         run: |
           aws lambda publish-version \
             --function-name "${FUNCTION_NAME}" \
-            --description "로그인 업데이트"
+            --description "오류 수정"

@@ -1,5 +1,5 @@
 import json
-from routes import db, token, users, jobs
+from routes import db, users, jobs
 from common import response
 
 def _norm_path(event):
