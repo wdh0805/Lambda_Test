@@ -32,6 +32,9 @@ jobs:
             --function-name "${FUNCTION_NAME}" \
             --zip-file fileb://function.zip
 
+      - name: Wait for Lambda update to finish
+        run: sleep 15   # 15초 정도 대기
+
       - name: Publish version with description
         run: |
           aws lambda publish-version \
