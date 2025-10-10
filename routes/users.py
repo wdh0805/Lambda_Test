@@ -13,7 +13,7 @@ def list_users(event):
     result = get_bearer_token(event=event, token=access_token)
     if not result:
         print("get token error")
-        response.error()
+        response.error(message="token not exist")
     print(f"access token :  {access_token}")
     print("get token end")
 
@@ -21,7 +21,7 @@ def list_users(event):
     result = is_valid_token(token=access_token[0],expected_type="access")
     if not result:
         print("valid token error")
-        response.error()
+        response.error(message="token invalid")
     print("valid token end")
 
     data = [
@@ -45,8 +45,8 @@ def refresh_token(event):
         return response.ok(data=data)
 
     else:
-        print("refresh token end")
-        return response.error()
+        print("refresh token error")
+        return response.error(message="invalid token")
 
 def login(event,api_url:str):
     print("login start")
@@ -65,7 +65,7 @@ def login(event,api_url:str):
 
     # result_code 실패
     if data.get("result_code") != '0':
-        return response.error(data=data)
+        return response.error(message=data)
     
     access  = data.get("access")
     refresh = data.get("refresh")
