@@ -9,6 +9,7 @@ env:
 
 jobs:
   deploy:
+    if: contains(github.event.head_commit.message, '[deploy]')  # 커밋 메시지에 [deploy] 있을 때만 실행
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -39,4 +40,4 @@ jobs:
         run: |
           aws lambda publish-version \
             --function-name "${FUNCTION_NAME}" \
-            --description "버그 수정"
+            --description "delpoly 테스트"

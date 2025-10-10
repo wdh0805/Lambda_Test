@@ -9,6 +9,8 @@ TABLE_NAME = "Lambda_with_DB"
 
 def list_users(event):
     access_token = []
+    print("테스트")
+
     print("get token start")
     result = get_bearer_token(event=event, token=access_token)
     if not result:
