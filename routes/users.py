@@ -13,7 +13,7 @@ def list_users(event):
     result = get_bearer_token(event=event, token=access_token)
     if not result:
         print("get token error")
-        response.error(message="token not exist")
+        return response.error(message="token not exist")
     print(f"access token :  {access_token}")
     print("get token end")
 
@@ -21,9 +21,8 @@ def list_users(event):
     result = is_valid_token(token=access_token[0],expected_type="access")
     if not result:
         print("valid token error")
-        response.error(message="token invalid")
+        return response.error(message="token invalid")
     print("valid token end")
-
     data = [
         {"id": 1, "name": "Alice"},
         {"id": 2, "name": "fBob"}
