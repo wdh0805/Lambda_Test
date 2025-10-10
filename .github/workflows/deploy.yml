@@ -40,4 +40,4 @@ jobs:
         run: |
           aws lambda publish-version \
             --function-name "${FUNCTION_NAME}" \
-            --description "delpoly 테스트"
+            --description "delpoly 배포되야함"
