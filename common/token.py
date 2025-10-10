@@ -51,7 +51,15 @@ def get_user_from_token(token: str):
         return None
     except jwt.InvalidTokenError:
         return None
-    
+
+def get_bearer_token(event:dict, token:list)->bool:
+    headers = event.get("headers", {}) or {}
+    auth_header = headers.get("Authorization") or headers.get("authorization")
+    if not auth_header or not auth_header.startswith("Bearer "):
+        return False
+    token.append(auth_header.split(" ", 1)[1])
+    return True
+
 def is_valid_token(token: str, expected_type: str = "access") -> bool:
     """
     토큰 검증 함수
@@ -64,9 +72,11 @@ def is_valid_token(token: str, expected_type: str = "access") -> bool:
         return payload.get("token_type") == expected_type
     
     except jwt.ExpiredSignatureError:   # 만료 토큰
+        print("token expired")
         return False
     
     except jwt.InvalidTokenError:   # 비정상 토큰
+        print("token invalid")
         return False
     
 if __name__=="__main__":

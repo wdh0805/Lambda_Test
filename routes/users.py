@@ -2,12 +2,28 @@ import json
 from common import response
 import requests
 import boto3
-from common.token import create_access_token, get_user_from_token, is_valid_token
+from common.token import create_access_token, get_bearer_token, get_user_from_token, is_valid_token
 
 dynamodb = boto3.client("dynamodb")
 TABLE_NAME = "Lambda_with_DB"
 
 def list_users(event):
+    access_token = []
+    print("get token start")
+    result = get_bearer_token(event=event, token=access_token)
+    if not result:
+        print("get token error")
+        response.error()
+    print(f"access token :  {access_token}")
+    print("get token end")
+
+    print("valid token start")
+    result = is_valid_token(token=access_token,expected_type="access")
+    if not result:
+        print("valid token error")
+        response.error()
+    print("valid token end")
+
     data = [
         {"id": 1, "name": "Alice"},
         {"id": 2, "name": "fBob"}
@@ -34,11 +50,11 @@ def refresh_token(event):
 
 def login(event,api_url:str):
     print("login start")
-    body = json.loads(event.get("body") or "{}")
+    body     = json.loads(event.get("body") or "{}")
     login_id = body.get("login_id")
     password = body.get("password")
 
-    url = f"{api_url}/api/user/login/"
+    url     = f"{api_url}/api/user/login/"
     payload = {"login_id":login_id,"password":password}
 
     print("login request to shop start")
@@ -51,7 +67,7 @@ def login(event,api_url:str):
     if data.get("result_code") != '0':
         return response.error(data=data)
     
-    access = data.get("access")
+    access  = data.get("access")
     refresh = data.get("refresh")
     user_id = get_user_from_token(access)
     cleanup_dynamodb_user()
