@@ -18,7 +18,7 @@ def list_users(event):
     print("get token end")
 
     print("valid token start")
-    result = is_valid_token(token=access_token,expected_type="access")
+    result = is_valid_token(token=access_token[0],expected_type="access")
     if not result:
         print("valid token error")
         response.error()
