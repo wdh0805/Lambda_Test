@@ -42,7 +42,7 @@ def lambda_handler(event:dict, context):
             ("POST", "/refresh")  : (users.refresh_token,{}),
 
             # APP Server API
-            ("POST", "/api/echo")    : (shop_app.echo, {"api_url": api_url}), # echo test
+            ("POST", "/api/echo/")    : (shop_app.echo, {"api_url": api_url}), # echo test
             # ("POST", "/api/login/SL/"): (shop_app.login_SL, {"api_url": api_url, "server":alias}),
             # ("POST", "/api/login/OL/"): (users.list_users, {}),
 
