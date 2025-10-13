@@ -38,6 +38,8 @@ jobs:
 
       - name: Publish version with description
         run: |
+          COMMIT_MSG="${{ github.event.head_commit.message }}"
+          echo "Publishing Lambda with description: ${COMMIT_MSG}"
           aws lambda publish-version \
             --function-name "${FUNCTION_NAME}" \
-            --description "delpoly 배포되야함"
+            --description "${COMMIT_MSG}"

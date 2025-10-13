@@ -53,6 +53,10 @@ def get_user_from_token(token: str):
         return None
 
 def get_bearer_token(event:dict, token:list)->bool:
+    """
+    header 에서 token 을 추출하는 함수
+    빈 list token 에 데이터를 담음
+    """
     headers = event.get("headers", {}) or {}
     auth_header = headers.get("Authorization") or headers.get("authorization")
     if not auth_header or not auth_header.startswith("Bearer "):

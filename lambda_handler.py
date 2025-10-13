@@ -1,9 +1,9 @@
 import json
-from routes import db, users, jobs
+from routes import shop_app, users
 from common import response
 
-def _norm_path(event):
-    """스테이지 접두어(/test, /prod)를 제거해 논리 경로로 변환"""
+def _norm_path(event:dict)->str:
+    """스테이지 접두어(/test, /prod)를 제거한 경로로 변환"""
     raw = event.get("rawPath") or "/"
     stage = (event.get("requestContext") or {}).get("stage")
     if stage and raw.startswith("/" + stage):
@@ -12,7 +12,12 @@ def _norm_path(event):
     return raw
 
 
-def lambda_handler(event, context):
+def lambda_handler(event:dict, context):
+    """
+        API 입구
+        from aws_lambda_typing import context as context_
+        context:context_.Context
+    """
     print("lambda handler start")
     try:
         # 별칭 구분하여 API 요청하는 곳을 다르게 함
@@ -24,18 +29,27 @@ def lambda_handler(event, context):
             api_url = "http://52.78.168.191"
         print(f"server : {alias}")
 
-        http = (event.get("requestContext") or {}).get("http") or {}
-        method = http.get("method", "GET")
-        path = _norm_path(event)  # 예: "/users", "/jobs", "/token"
+        http  :dict = (event.get("requestContext") or {}).get("http") or {}
+        method:str  = http.get("method", "GET")
+        path  :str  = _norm_path(event) # 예: "/users", "/jobs", "/token"
+        print(http)
+        print(method)
+        print(path)
 
         routes = {
+            # User 관련 API
             ("GET", "/users")     : (users.list_users, {}),
-            ("POST", "/jobs")     : (jobs.create_job, {}),
-            ("POST", "/db_create"): (db.put_data, {}),
             ("POST", "/login")    : (users.login, {"api_url": api_url}),
-            ("POST", "/refresh")  : (users.refresh_token,{})
+            ("POST", "/refresh")  : (users.refresh_token,{}),
+
+            # APP Server API
+            ("POST", "/api/echo/")    : (shop_app.echo, {"api_url": api_url}), # echo test
+            # ("POST", "/api/login/SL/"): (shop_app.login_SL, {"api_url": api_url, "server":alias}),
+            # ("POST", "/api/login/OL/"): (users.list_users, {}),
+
         }
 
+        # API 존재 확인 후 실행 
         handler_info = routes.get((method, path))
         if handler_info:
             func, kwargs = handler_info
