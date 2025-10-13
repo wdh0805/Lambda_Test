@@ -3,7 +3,7 @@ from common import response
 import requests
 from requests import Response
 import boto3
-from common.constant import DYNAMODB_NAME, SHOP_CONNECT_PROD_ID, SHOP_CONNECT_PROD_PW, SHOP_CONNECT_TEST_ID, SHOP_CONNECT_TEST_PW
+from common.constant import DYNAMODB_NAME
 from common.token import create_access_token, get_user_from_token, is_valid_token
 
 def echo(event:dict, api_url:str): 
@@ -44,52 +44,6 @@ def refresh_token(event:dict):
     else:
         print("refresh token error")
         return response.error(message="invalid token")
-
-def login_SL(event:dict, api_url:str, server:str): 
-    print("SL login start")
-    body = json.loads(event.get("body") or "{}")
-
-    user_login_id    = body.get("user_login_id")
-    user_password    = body.get("user_password")
-    fingerprint     = body.get("finger_print")
-    sentinel_key_id  = body.get("sentinel_key_id")
-
-    if server          == "test":
-       system_account   = SHOP_CONNECT_TEST_ID
-       system_password  = SHOP_CONNECT_TEST_PW
-    else:
-        system_account  = SHOP_CONNECT_PROD_ID
-        system_password = SHOP_CONNECT_PROD_PW
-
-    url     = f"{api_url}/api/system/v2/login/SL/"
-    payload = {
-            'system_login_id' : system_account,
-            'system_password' : system_password,
-            'fingerprint'     : fingerprint,
-            'user_login_id'   : user_login_id,
-            'user_password'   : user_password,
-            'sentinel_key_id' : sentinel_key_id
-        }
-
-    print("SL login request to shop start")
-    res = requests.post(url=url, json=payload)
-    print("SL login request to shop end")
-
-    print(res)
-    data = res.json()
-
-    # result_code 실패
-    if data.get("result_code") != '0':
-        return response.error(message=data)
-    
-    access  = data.get("access")
-    refresh = data.get("refresh")
-    user_id = get_user_from_token(access)
-    cleanup_dynamodb_user()
-    register_user(refresh=refresh, user_id=str(user_id))
-
-    print("SL login end")
-    return response.ok(data=data)
 
 def register_user(refresh:str, user_id: str) -> bool:
     print("register user start")

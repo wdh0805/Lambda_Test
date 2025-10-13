@@ -1,8 +1,3 @@
 import os
 
-# AWS constant
 DYNAMODB_NAME        = "Lambda_with_DB"
-# SHOP_CONNECT_PROD_ID = os.getenv("SHOP_CONNECT_PROD_ID")
-# SHOP_CONNECT_PROD_PW = os.getenv("SHOP_CONNECT_PROD_PW")
-# SHOP_CONNECT_TEST_ID = os.getenv("SHOP_CONNECT_TEST_ID")
-# SHOP_CONNECT_TEST_PW = os.getenv("SHOP_CONNECT_TEST_PW")
