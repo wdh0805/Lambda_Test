@@ -47,7 +47,7 @@ def lambda_handler(event:dict, context):
         routes = {
             # User 관련 API
             ("GET", "/users")     : (users.list_users, {}),
-            ("POST", "/login")    : (users.login, {"api_url": api_url}),
+            # ("POST", "/login")    : (users.login, {"api_url": api_url}),
             ("POST", "/refresh")  : (users.refresh_token,{}),
 
             # APP Server API
