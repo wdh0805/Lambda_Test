@@ -2,23 +2,14 @@ import json
 from routes import shop_app, users
 from common import response
 
-def _norm_path(event: dict) -> str:
-    """스테이지 접두어(/test, /prod)를 제거하고 정규화"""
-    raw = event.get("rawPath") or "/"
-    stage = (event.get("requestContext") or {}).get("stage")
-
-    # 스테이지 제거
-    if stage and raw.startswith("/" + stage):
-        trimmed = raw[len(stage) + 1:]  # "/users" 또는 ""
-        path = trimmed if trimmed else "/"
-    else:
-        path = raw
-
-    # 슬래시 정규화: 루트("/")를 제외하고 끝에 / 제거
-    if path != "/" and path.endswith("/"):
-        path = path.rstrip("/")
-
-    return path
+def _norm_path(event:dict)->str: 
+    """스테이지 접두어(/test, /prod)를 제거한 경로로 변환"""
+    raw = event.get("rawPath") or "/" 
+    stage = (event.get("requestContext") or {}).get("stage") 
+    if stage and raw.startswith("/" + stage): 
+        trimmed = raw[len(stage) + 1:] # "/users" 또는 "" 
+        return trimmed if trimmed else "/" 
+    return raw
 
 def lambda_handler(event:dict, context):
     """
