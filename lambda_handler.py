@@ -67,4 +67,5 @@ def lambda_handler(event:dict, context):
 
     except Exception as e:
         # 운영환경에서는 내부 에러 메시지 노출하지 않음
+        print(e)
         return response.error("Internal Error", 500)
